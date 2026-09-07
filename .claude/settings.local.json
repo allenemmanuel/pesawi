@@ -3,7 +3,8 @@
     "allow": [
       "Bash(claude --version:*)",
       "Bash(claude /status)",
-      "Bash(claude doctor)"
+      "Bash(claude doctor)",
+      "Bash(npm run *)"
     ]
   }
 }
