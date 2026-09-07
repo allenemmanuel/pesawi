@@ -1,0 +1,48 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function signedIn() {
+      return request.auth != null && request.auth.token.courtId is string;
+    }
+
+    function courtOk(courtId) {
+      return signedIn()
+        && request.auth.token.courtId == courtId
+        && request.auth.token.sessionId == get(/databases/$(database)/documents/courts/$(courtId)).data.sessionId;
+    }
+
+    function sessionOk() {
+      return signedIn()
+        && request.auth.token.sessionId
+          == get(/databases/$(database)/documents/courts/$(request.auth.token.courtId)).data.sessionId;
+    }
+
+    function matchCourtId(data) {
+      return data.courtId != null ? data.courtId
+        : data.boardId != null ? data.boardId
+        : data.laneId != null ? data.laneId
+        : data.tableId;
+    }
+
+    match /courts/{courtId} {
+      allow read: if true;
+      allow write: if false;
+    }
+
+    match /matches/{id} {
+      allow read: if true;
+      // Any active court session can create/update/delete (inline RR scoring + clear).
+      allow create: if sessionOk() && matchCourtId(request.resource.data) is string;
+      allow update: if sessionOk()
+        && matchCourtId(resource.data) is string
+        && matchCourtId(request.resource.data) is string;
+      allow delete: if sessionOk() && matchCourtId(resource.data) is string;
+    }
+
+    match /meta/{id} {
+      allow read: if true;
+      allow write: if signedIn()
+        && courtOk(request.auth.token.courtId);
+    }
+  }
+}

@@ -1,0 +1,40 @@
+import type { PentanqueMatch } from "./types";
+
+export const SAMPLE_MATCHES: PentanqueMatch[] = [
+  {
+    id: "pq-md-live",
+    sport: "Pentanque",
+    discipline: "MD",
+    laneId: "court-2",
+    lane: "Lane 2",
+    sideA: { wilayahId: "kota-kinabalu", players: ["A. Lim", "B. Chong"] },
+    sideB: { wilayahId: "tawau", players: ["Haziq Rahman", "Rafi Noor"] },
+    pointsA: 8,
+    pointsB: 5,
+    status: "live",
+  },
+  {
+    id: "pq-xd-final",
+    sport: "Pentanque",
+    discipline: "XD",
+    laneId: "court-1",
+    lane: "Lane 1",
+    sideA: { wilayahId: "sandakan", players: ["N. Tan", "Cathy Ng"] },
+    sideB: { wilayahId: "lahad-datu", players: ["Irfan Malik", "Hana Zulkifli"] },
+    pointsA: 13,
+    pointsB: 11,
+    status: "complete",
+  },
+  {
+    id: "pq-wt-live",
+    sport: "Pentanque",
+    discipline: "WT",
+    laneId: "court-3",
+    lane: "Lane 3",
+    sideA: { wilayahId: "keningau", players: ["Siti Aminah", "Mei Tan", "Aina Yusuf"] },
+    sideB: { wilayahId: "kota-kinabalu", players: ["Nora Aziz", "Kay Wong", "Jo Park"] },
+    pointsA: 7,
+    pointsB: 4,
+    status: "live",
+  },
+];
