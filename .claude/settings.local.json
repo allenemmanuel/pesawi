@@ -4,7 +4,10 @@
       "Bash(claude --version:*)",
       "Bash(claude /status)",
       "Bash(claude doctor)",
-      "Bash(npm run *)"
+      "Bash(npm run *)",
+      "Bash(firebase hosting:sites:create *)",
+      "Bash(firebase deploy *)",
+      "WebFetch(domain:pesawi.web.app)"
     ]
   }
 }
