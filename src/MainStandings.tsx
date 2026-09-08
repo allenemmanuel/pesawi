@@ -146,11 +146,20 @@ export default function MainStandings() {
 
   return (
     <section>
-      <div className="mb-6 sm:mb-8 [text-shadow:0_2px_16px_rgba(0,0,0,0.55)]">
-        <h1 className="font-display text-center text-4xl tracking-tight sm:text-5xl">
-          Kedudukan Pingat
-        </h1>
-        <p className="mt-1 text-center text-sm text-[var(--muted)]">Kedudukan keseluruhan wilayah</p>
+      <div
+        className="mb-6 flex w-full min-w-0 flex-col items-center gap-3 pt-1 text-center sm:mb-8 sm:gap-2"
+        aria-label="Kedudukan Pingat — PESAWI Ke-13"
+      >
+        <img
+          src="/landing/hero-title.png"
+          alt="Pesta Sukan Antara Wilayah (PESAWI) Ke-13, 2026"
+          className="mb-0 h-auto w-[12.6rem] max-w-full object-contain drop-shadow-[0_18px_40px_rgba(0,0,0,0.45)] md:mb-[-10px]"
+          draggable={false}
+        />
+        <h1 className="sport-live-title shrink">KEDUDUKAN PINGAT</h1>
+        <p className="text-xs font-semibold uppercase tracking-[0.28em] text-[var(--muted)] sm:text-sm [text-shadow:0_2px_16px_rgba(0,0,0,0.55)]">
+          Kedudukan keseluruhan wilayah
+        </p>
       </div>
 
       <div className="live-card-enter overflow-x-auto rounded-2xl border border-[var(--line)] bg-[rgba(5,9,20,0.78)] shadow-[0_12px_40px_rgba(0,0,0,0.35)] backdrop-blur-sm">
