@@ -157,7 +157,7 @@ export default function MainStandings() {
           draggable={false}
         />
         <h1 className="sport-live-title shrink">KEDUDUKAN PINGAT</h1>
-        <p className="text-xs font-semibold uppercase tracking-[0.28em] text-[var(--muted)] sm:text-sm [text-shadow:0_2px_16px_rgba(0,0,0,0.55)]">
+        <p className="text-[0.8rem] font-bold uppercase tracking-[0.3em] text-[#f0c43a] sm:text-[0.95rem] [-webkit-text-stroke:0.4px_rgba(255,255,255,0.55)] [paint-order:stroke_fill] [text-shadow:0_2px_0_#6b4500,0_4px_14px_rgba(0,0,0,0.7)]">
           Kedudukan keseluruhan wilayah
         </p>
       </div>
