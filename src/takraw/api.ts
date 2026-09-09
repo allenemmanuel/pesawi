@@ -94,6 +94,7 @@ export async function setFinalScore(sideAId: string, sideBId: string, scoreA: nu
   const session = await requireCourt();
   if (!session.ok) return fail(session.error, 401);
   if (!sideAId || !sideBId || sideAId === sideBId) return fail("Pick two different wilayah.");
+  if (scoreA === 0 && scoreB === 0) return fail("Enter a score for at least one side.");
   const gamesForTyped = synthesizeGameWins(scoreA, scoreB, 15);
   if (!gamesForTyped) return fail("Enter a valid score (e.g. 3-1).");
 

@@ -109,6 +109,7 @@ export async function setFinalScore(sideAId: string, sideBId: string, scoreA: nu
   if (!Number.isInteger(scoreA) || !Number.isInteger(scoreB) || scoreA < 0 || scoreB < 0) {
     return fail("Enter a valid score (e.g. 13-7).");
   }
+  if (scoreA === 0 && scoreB === 0) return fail("Enter a score for at least one side.");
   const discipline: Discipline = "MD";
   const listed = await listSportMatches<PentanqueMatch>("Pentanque");
   if (!listed.ok) return fail(listed.error, listed.status);

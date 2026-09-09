@@ -1,7 +1,8 @@
 import type { GameScore } from "../badminton/types";
 import type { RoundRobinAdapter, RowScoreView, WilayahMatch } from "./types";
 
-export const POINTS_PER_WIN = 2;
+export const POINTS_PER_WIN = 3;
+export const POINTS_PER_DRAW = 1;
 
 function rowIsA(match: WilayahMatch, rowId: string) {
   return match.sideA.wilayahId === rowId;
@@ -13,7 +14,13 @@ export function gamesWonAdapter<T extends WilayahMatch & { games: GameScore[] }>
 ): RoundRobinAdapter<T> {
   return {
     pointsPerWin: POINTS_PER_WIN,
+    pointsPerDraw: POINTS_PER_DRAW,
     winner: (match) => (match.status === "complete" ? winner(match.games) : null),
+    isDraw: (match) => {
+      if (match.status !== "complete") return false;
+      const counts = won(match.games);
+      return counts.a === counts.b && counts.a > 0;
+    },
     scoreView(match, rowId): RowScoreView {
       const isA = rowIsA(match, rowId);
       const counts = won(match.games);
@@ -38,7 +45,10 @@ export function scorePairAdapter<T extends WilayahMatch>(
 ): RoundRobinAdapter<T> {
   return {
     pointsPerWin: POINTS_PER_WIN,
+    pointsPerDraw: POINTS_PER_DRAW,
     winner: (match) => (match.status === "complete" ? winner(match) : null),
+    isDraw: (match) =>
+      match.status === "complete" && scoreA(match) === scoreB(match) && scoreA(match) > 0,
     scoreView(match, rowId): RowScoreView {
       const isA = rowIsA(match, rowId);
       const scoredFor = isA ? scoreA(match) : scoreB(match);

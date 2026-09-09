@@ -11,6 +11,7 @@ export type RoundRobinCell = {
 export type RoundRobinRow = {
   wilayah: (typeof WILAYAH)[number];
   wins: number;
+  draws: number;
   losses: number;
   points: number;
   scoredFor: number;
@@ -39,6 +40,9 @@ export type RowScoreView = {
 
 export type RoundRobinAdapter<T extends WilayahMatch> = {
   pointsPerWin: number;
+  pointsPerDraw: number;
   winner: (match: T) => "a" | "b" | null;
+  /** True when a completed match ended level (equal, non-zero score). */
+  isDraw: (match: T) => boolean;
   scoreView: (match: T, rowId: string) => RowScoreView;
 };

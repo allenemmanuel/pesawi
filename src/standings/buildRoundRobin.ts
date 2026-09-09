@@ -13,7 +13,9 @@ function cellFromPair<T extends WilayahMatch>(
   rowId: string,
   adapter: RoundRobinAdapter<T>,
 ): RoundRobinCell {
-  const complete = related.filter((match) => match.status === "complete" && adapter.winner(match));
+  const complete = related.filter(
+    (match) => match.status === "complete" && (adapter.winner(match) !== null || adapter.isDraw(match)),
+  );
   const live = related.filter((match) => match.status === "live");
   const matchIds = [...live, ...complete].map((match) => match.id);
 
@@ -68,6 +70,7 @@ export function buildRoundRobin<T extends WilayahMatch>(
 ): RoundRobinRow[] {
   const rows: RoundRobinRow[] = WILAYAH.map((wilayah) => {
     let wins = 0;
+    let draws = 0;
     let losses = 0;
     let scoredFor = 0;
     let scoredAgainst = 0;
@@ -78,11 +81,14 @@ export function buildRoundRobin<T extends WilayahMatch>(
       }
 
       const related = matchesBetween(matches, wilayah.id, opponent.id);
-      const complete = related.filter((match) => match.status === "complete" && adapter.winner(match));
+      const complete = related.filter(
+        (match) => match.status === "complete" && (adapter.winner(match) !== null || adapter.isDraw(match)),
+      );
 
       for (const match of complete) {
         const view = adapter.scoreView(match, wilayah.id);
-        if (view.won) wins += 1;
+        if (adapter.isDraw(match)) draws += 1;
+        else if (view.won) wins += 1;
         else losses += 1;
         scoredFor += view.scoredFor;
         scoredAgainst += view.scoredAgainst;
@@ -94,8 +100,9 @@ export function buildRoundRobin<T extends WilayahMatch>(
     return {
       wilayah,
       wins,
+      draws,
       losses,
-      points: wins * adapter.pointsPerWin,
+      points: wins * adapter.pointsPerWin + draws * adapter.pointsPerDraw,
       scoredFor,
       scoredAgainst,
       rank: 0,
