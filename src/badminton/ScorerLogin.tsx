@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState, type FormEvent } from "react";
-import { BrandCrest, BrandWordmark, BrandYsg, EVENT, EventFooter } from "../brand";
+import { BrandCrest, BrandWordmark, BrandYsg, EVENT } from "../brand";
 import { COURTS, deskFromHash } from "./courts";
 import { EyeIcon, EyeOffIcon } from "../icons";
 import { useBadminton } from "./store";
@@ -16,6 +16,8 @@ export default function ScorerLogin() {
   const attemptedPinRef = useRef<string | null>(null);
 
   const deepLinkDesk = deskFromHash(window.location.hash);
+  const [venueLine1, venueLine2] = EVENT.venue.split(/,\s*/);
+  const [sloganLine1, sloganLine2] = EVENT.slogan.split(/,\s*/);
 
   async function attemptLogin(candidate: string) {
     const courtId = deepLinkDesk?.id ?? COURTS[0]?.id ?? "";
@@ -59,9 +61,6 @@ export default function ScorerLogin() {
         </div>
         <BrandWordmark className="mt-4 h-10" />
         <h1 className="font-display mt-5 text-3xl font-semibold tracking-tight">Scorer</h1>
-        <p className="mt-2 text-sm text-[var(--muted)]">
-          {EVENT.dates} · {EVENT.venue}
-        </p>
         <p className="mt-3 max-w-xs text-sm leading-relaxed text-[var(--muted)]">
           {deepLinkDesk ? `Enter the scorer PIN for ${deepLinkDesk.name}.` : "Enter the scorer PIN."}
         </p>
@@ -101,7 +100,13 @@ export default function ScorerLogin() {
         {busy ? "Signing in…" : "Sign in"}
       </button>
 
-      <EventFooter className="mt-10" />
+      <footer className="mt-10 text-center text-xs leading-relaxed text-[var(--muted)] sm:text-sm">
+        <p>{EVENT.dates}</p>
+        <p>{venueLine1},</p>
+        <p>{venueLine2}</p>
+        <p className="mt-1 opacity-80">{sloganLine1},</p>
+        <p className="opacity-80">{sloganLine2}</p>
+      </footer>
     </form>
   );
 }
