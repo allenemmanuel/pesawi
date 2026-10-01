@@ -1,19 +1,23 @@
-import { useState, type FormEvent } from "react";
+import { useEffect, useRef, useState, type FormEvent } from "react";
 import { BrandCrest, BrandWordmark, BrandYsg, EVENT, EventFooter } from "../brand";
 import { COURTS, deskFromHash } from "./courts";
+import { EyeIcon, EyeOffIcon } from "../icons";
 import { useBadminton } from "./store";
 import { Field, fieldClass, primaryButtonClass } from "./ui";
+
+const PIN_LENGTH = 4;
 
 export default function ScorerLogin() {
   const { login } = useBadminton();
   const [pin, setPin] = useState("");
+  const [showPin, setShowPin] = useState(false);
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
+  const attemptedPinRef = useRef<string | null>(null);
 
   const deepLinkDesk = deskFromHash(window.location.hash);
 
-  async function onSubmit(event: FormEvent) {
-    event.preventDefault();
+  async function attemptLogin(candidate: string) {
     const courtId = deepLinkDesk?.id ?? COURTS[0]?.id ?? "";
     if (!courtId) {
       setError("Scorer boards are not configured.");
@@ -21,15 +25,29 @@ export default function ScorerLogin() {
     }
     setBusy(true);
     setError("");
-    const result = await login(courtId, pin);
+    const result = await login(courtId, candidate);
     setBusy(false);
     if (!result.ok) {
       setError(result.error);
+      setPin("");
+      attemptedPinRef.current = null;
       return;
     }
     if (deepLinkDesk) {
       window.location.hash = deepLinkDesk.hash;
     }
+  }
+
+  useEffect(() => {
+    if (busy || pin.length !== PIN_LENGTH || attemptedPinRef.current === pin) return;
+    attemptedPinRef.current = pin;
+    void attemptLogin(pin);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pin, busy]);
+
+  function onSubmit(event: FormEvent) {
+    event.preventDefault();
+    void attemptLogin(pin);
   }
 
   return (
@@ -51,14 +69,25 @@ export default function ScorerLogin() {
 
       <div className="mt-8 space-y-4">
         <Field label="PIN">
-          <input
-            className={`${fieldClass} h-14 text-center text-2xl tracking-[0.4em]`}
-            inputMode="numeric"
-            autoComplete="one-time-code"
-            value={pin}
-            onChange={(event) => setPin(event.target.value.replace(/\D/g, "").slice(0, 8))}
-            placeholder="••••"
-          />
+          <div className="relative">
+            <input
+              className={`${fieldClass} h-14 pr-12 text-center text-2xl tracking-[0.4em]`}
+              type={showPin ? "text" : "password"}
+              inputMode="numeric"
+              autoComplete="one-time-code"
+              value={pin}
+              onChange={(event) => setPin(event.target.value.replace(/\D/g, "").slice(0, 8))}
+              placeholder="••••"
+            />
+            <button
+              type="button"
+              onClick={() => setShowPin((value) => !value)}
+              aria-label={showPin ? "Hide PIN" : "Show PIN"}
+              className="absolute inset-y-0 right-3 flex items-center text-[var(--muted)] hover:text-[var(--gold)]"
+            >
+              {showPin ? <EyeOffIcon className="h-5 w-5" /> : <EyeIcon className="h-5 w-5" />}
+            </button>
+          </div>
         </Field>
       </div>
 
@@ -66,7 +95,7 @@ export default function ScorerLogin() {
 
       <button
         type="submit"
-        disabled={busy || pin.length < 4}
+        disabled={busy || pin.length < PIN_LENGTH}
         className={`${primaryButtonClass} mt-8 h-14 w-full text-base`}
       >
         {busy ? "Signing in…" : "Sign in"}
