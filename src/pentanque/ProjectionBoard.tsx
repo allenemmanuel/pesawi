@@ -47,7 +47,7 @@ export default function ProjectionBoard() {
   const many = live.length > 1;
 
   return (
-    <ProjectionShell subtitle="Live pentanque" idle={idle} onExit={exitProjection}>
+    <ProjectionShell subtitle="Live petanque" idle={idle} onExit={exitProjection}>
 
       {live.length === 0 ? (
         <div className="flex flex-1 items-center justify-center text-2xl text-[var(--muted)]">

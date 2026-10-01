@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { SPORTS, type Sport } from "./data";
+import { SPORTS, sportDisplayLabel, type Sport } from "./data";
 import MainBanner from "./MainBanner";
 import MainStandings from "./MainStandings";
 import { BadmintonProvider, useBadminton } from "./badminton/store";
@@ -44,14 +44,7 @@ const TOP_TABS: { id: View; label: string }[] = [
   { id: "pingat", label: "Pingat" },
   ...SPORTS.map((sport) => ({
     id: sport as View,
-    label:
-      sport === "Sepak Takraw"
-        ? "Takraw"
-        : sport === "Bola Tampar"
-          ? "Tampar"
-          : sport === "Ping Pong"
-            ? "P.Pong"
-            : sport,
+    label: sportDisplayLabel(sport),
   })),
 ];
 
@@ -423,7 +416,7 @@ function SiteHeader({
                   }}
                 >
                   <SportMascot sport={sport} className="h-5 w-5 shrink-0" />
-                  <span>{sport}</span>
+                  <span>{sportDisplayLabel(sport)}</span>
                 </button>
               ))}
             </div>

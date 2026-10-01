@@ -5,7 +5,7 @@ import type { Sport } from "../data";
 const SPORTS: { sport: Sport; hash: string; label: string }[] = [
   { sport: "Badminton", hash: "/scorer/badminton", label: "Badminton" },
   { sport: "Futsal", hash: "/scorer/futsal", label: "Futsal" },
-  { sport: "Pentanque", hash: "/scorer/pentanque", label: "Pentanque" },
+  { sport: "Pentanque", hash: "/scorer/pentanque", label: "Petanque" },
   { sport: "Karom", hash: "/scorer/karom", label: "Karom" },
   { sport: "Ping Pong", hash: "/scorer/pingpong", label: "Ping Pong" },
   { sport: "Pickleball", hash: "/scorer/pickleball", label: "Pickleball" },

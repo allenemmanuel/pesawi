@@ -4,7 +4,7 @@ import "./main-landing.css";
 
 export const SPORT_BOARD_TITLE: Record<Sport, string> = {
   Futsal: "FUTSAL",
-  Pentanque: "PENTANQUE",
+  Pentanque: "PETANQUE",
   Karom: "KAROM",
   "Ping Pong": "PING PONG",
   Pickleball: "PICKLEBALL",

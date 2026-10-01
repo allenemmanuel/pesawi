@@ -12,6 +12,10 @@ export const SPORTS = [
 
 export type Sport = (typeof SPORTS)[number];
 
+export function sportDisplayLabel(sport: Sport): string {
+  return sport === "Pentanque" ? "Petanque" : sport;
+}
+
 export type Match = {
   id: string;
   sport: Sport;

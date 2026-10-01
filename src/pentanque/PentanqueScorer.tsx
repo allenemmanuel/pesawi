@@ -55,7 +55,7 @@ export default function PentanqueScorer() {
       <div className="mb-6 flex items-start justify-between gap-3">
         <div>
           <p className="text-sm text-[var(--lime)]">{laneNameFromCourt(court.name)}</p>
-          <h1 className="text-xl font-semibold">Pentanque scorer</h1>
+          <h1 className="text-xl font-semibold">Petanque scorer</h1>
         </div>
         <div className="flex flex-col items-end gap-2">
           <button
@@ -91,7 +91,7 @@ export default function PentanqueScorer() {
 
       {rows.length === 0 ? (
         <p className="rounded-2xl bg-[var(--surface)] px-5 py-12 text-center text-[var(--muted)]">
-          No pentanque matches on {laneNameFromCourt(court.name)} yet.
+          No petanque matches on {laneNameFromCourt(court.name)} yet.
         </p>
       ) : (
         <ul className="space-y-3">

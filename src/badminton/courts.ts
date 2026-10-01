@@ -1,4 +1,4 @@
-import { SPORTS, type Sport } from "../data";
+import { SPORTS, sportDisplayLabel, type Sport } from "../data";
 
 export type ScorerDesk = {
   id: string;
@@ -23,7 +23,7 @@ export const COURTS: readonly ScorerDesk[] = [
   { id: "desk-pingat", name: "Pingat", hash: "/scorer/medals" },
   ...SPORTS.map((sport) => ({
     id: `desk-${sport.toLowerCase().replace(/\s+/g, "-")}`,
-    name: sport,
+    name: sportDisplayLabel(sport),
     hash: SPORT_HASH[sport],
   })),
 ] as const;
