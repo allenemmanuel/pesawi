@@ -1,37 +1,35 @@
-import { useEffect, useState, type FormEvent } from "react";
+import { useState, type FormEvent } from "react";
 import { BrandCrest, BrandWordmark, BrandYsg, EVENT, EventFooter } from "../brand";
-import { COURTS, deskFromHash, type ScorerDesk } from "./courts";
+import { COURTS, deskFromHash } from "./courts";
 import { useBadminton } from "./store";
 import { Field, fieldClass, primaryButtonClass } from "./ui";
 
 export default function ScorerLogin() {
   const { login } = useBadminton();
-  const [deskId, setDeskId] = useState(() => deskFromHash(window.location.hash)?.id ?? COURTS[0]?.id ?? "");
   const [pin, setPin] = useState("");
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
 
-  useEffect(() => {
-    const fromHash = deskFromHash(window.location.hash);
-    if (fromHash) setDeskId(fromHash.id);
-  }, []);
+  const deepLinkDesk = deskFromHash(window.location.hash);
 
   async function onSubmit(event: FormEvent) {
     event.preventDefault();
-    const desk = COURTS.find((item) => item.id === deskId) as ScorerDesk | undefined;
-    if (!desk) {
-      setError("Choose a board.");
+    const courtId = deepLinkDesk?.id ?? COURTS[0]?.id ?? "";
+    if (!courtId) {
+      setError("Scorer boards are not configured.");
       return;
     }
     setBusy(true);
     setError("");
-    const result = await login(desk.id, pin);
+    const result = await login(courtId, pin);
     setBusy(false);
     if (!result.ok) {
       setError(result.error);
       return;
     }
-    window.location.hash = desk.hash;
+    if (deepLinkDesk) {
+      window.location.hash = deepLinkDesk.hash;
+    }
   }
 
   return (
@@ -47,24 +45,11 @@ export default function ScorerLogin() {
           {EVENT.dates} · {EVENT.venue}
         </p>
         <p className="mt-3 max-w-xs text-sm leading-relaxed text-[var(--muted)]">
-          Choose the board to edit, then enter the scorer PIN.
+          {deepLinkDesk ? `Enter the scorer PIN for ${deepLinkDesk.name}.` : "Enter the scorer PIN."}
         </p>
       </div>
 
       <div className="mt-8 space-y-4">
-        <Field label="Board">
-          <select
-            className={`${fieldClass} h-14 text-base`}
-            value={deskId}
-            onChange={(event) => setDeskId(event.target.value)}
-          >
-            {COURTS.map((desk) => (
-              <option key={desk.id} value={desk.id}>
-                {desk.name}
-              </option>
-            ))}
-          </select>
-        </Field>
         <Field label="PIN">
           <input
             className={`${fieldClass} h-14 text-center text-2xl tracking-[0.4em]`}
@@ -81,7 +66,7 @@ export default function ScorerLogin() {
 
       <button
         type="submit"
-        disabled={busy || !deskId || pin.length < 4}
+        disabled={busy || pin.length < 4}
         className={`${primaryButtonClass} mt-8 h-14 w-full text-base`}
       >
         {busy ? "Signing in…" : "Sign in"}
