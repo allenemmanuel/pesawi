@@ -19,6 +19,21 @@ function wilayahForStanding(row: Standing) {
   return WILAYAH.find((item) => item.short === row.short);
 }
 
+function ordinal(n: number): string {
+  const rem100 = n % 100;
+  if (rem100 >= 11 && rem100 <= 13) return `${n}th`;
+  switch (n % 10) {
+    case 1:
+      return `${n}st`;
+    case 2:
+      return `${n}nd`;
+    case 3:
+      return `${n}rd`;
+    default:
+      return `${n}th`;
+  }
+}
+
 function rowsFromStandings(standings: Standing[]): MedalRow[] {
   return WILAYAH.map((wilayah) => {
     const standing = standings.find((item) => item.short === wilayah.short);
@@ -168,6 +183,9 @@ export default function MainStandings() {
         <table className="w-full border-collapse text-sm sm:min-w-[36rem] sm:text-base">
           <thead>
             <tr className="border-b border-[var(--line)]">
+              <th className="w-px whitespace-nowrap px-3 py-3 text-center font-semibold tracking-wide sm:px-4 sm:py-4">
+                TEMPAT
+              </th>
               <th className="w-px whitespace-nowrap px-3 py-3 text-left font-semibold tracking-wide sm:px-4 sm:py-4">
                 WILAYAH
               </th>
@@ -201,6 +219,9 @@ export default function MainStandings() {
               const wilayahId = wilayah?.id;
               return (
                 <tr key={row.team} className="border-b border-[var(--line)] last:border-b-0">
+                  <td className="w-px whitespace-nowrap px-3 py-3 text-center tabular sm:px-4 sm:py-4">
+                    {ordinal(row.rank)}
+                  </td>
                   <td
                     className="w-px whitespace-nowrap px-3 py-3 font-medium tracking-wide sm:px-4 sm:py-4"
                     style={wilayah ? wilayahChipStyle(wilayah) : undefined}
