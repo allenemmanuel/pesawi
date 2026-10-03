@@ -1,29 +1,38 @@
-import { useEffect, useState, type FormEvent } from "react";
+import { useEffect, useRef, useState, type FormEvent } from "react";
 import { WILAYAH } from "../badminton/types";
 import { Field, fieldClass, primaryButtonClass } from "../badminton/ui";
 import { BrandCrest, EVENT } from "../brand";
-import { DEFAULT_MEDAL_ROWS, saveMedalRows, subscribeMedals, type MedalRow } from "../lib/medals";
+import { DEFAULT_MEDAL_ROWS, saveMedalRows, subscribeMedals } from "../lib/medals";
 
-function rowsFromStandings(): MedalRow[] {
-  return DEFAULT_MEDAL_ROWS.map((row) => ({ ...row }));
+type DraftRow = { wilayahId: string; gold: string; silver: string; bronze: string };
+
+function rowsFromStandings(): DraftRow[] {
+  return DEFAULT_MEDAL_ROWS.map((row) => ({
+    wilayahId: row.wilayahId,
+    gold: String(row.gold),
+    silver: String(row.silver),
+    bronze: String(row.bronze),
+  }));
 }
 
 export default function MedalEditor() {
-  const [rows, setRows] = useState<MedalRow[]>(rowsFromStandings);
+  const [rows, setRows] = useState<DraftRow[]>(rowsFromStandings);
   const [error, setError] = useState("");
   const [saved, setSaved] = useState(false);
   const [busy, setBusy] = useState(false);
+  const dirtyRef = useRef(false);
 
   useEffect(() => {
     return subscribeMedals((snapshot) => {
+      if (dirtyRef.current) return;
       setRows(
         WILAYAH.map((wilayah) => {
           const standing = snapshot.standings.find((item) => item.short === wilayah.short);
           return {
             wilayahId: wilayah.id,
-            gold: standing?.gold ?? 0,
-            silver: standing?.silver ?? 0,
-            bronze: standing?.bronze ?? 0,
+            gold: String(standing?.gold ?? 0),
+            silver: String(standing?.silver ?? 0),
+            bronze: String(standing?.bronze ?? 0),
           };
         }),
       );
@@ -31,10 +40,9 @@ export default function MedalEditor() {
   }, []);
 
   function update(wilayahId: string, field: "gold" | "silver" | "bronze", value: string) {
-    const n = Number(value);
-    setRows((current) =>
-      current.map((row) => (row.wilayahId === wilayahId ? { ...row, [field]: Number.isFinite(n) ? n : 0 } : row)),
-    );
+    dirtyRef.current = true;
+    const digits = value.replace(/\D/g, "");
+    setRows((current) => current.map((row) => (row.wilayahId === wilayahId ? { ...row, [field]: digits } : row)));
   }
 
   async function onSubmit(event: FormEvent) {
@@ -42,12 +50,20 @@ export default function MedalEditor() {
     setBusy(true);
     setError("");
     setSaved(false);
-    const result = await saveMedalRows(rows);
+    const result = await saveMedalRows(
+      rows.map((row) => ({
+        wilayahId: row.wilayahId,
+        gold: Number(row.gold) || 0,
+        silver: Number(row.silver) || 0,
+        bronze: Number(row.bronze) || 0,
+      })),
+    );
     setBusy(false);
     if (!result.ok) {
       setError(result.error);
       return;
     }
+    dirtyRef.current = false;
     setSaved(true);
   }
 
