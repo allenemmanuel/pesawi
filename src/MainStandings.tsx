@@ -1,7 +1,7 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { WILAYAH, wilayahChipStyle } from "./badminton/types";
 import { STANDINGS, type Standing } from "./data";
-import { saveMedalRows, subscribeMedals, type MedalRow } from "./lib/medals";
+import { saveMedalField, saveMedalRows, subscribeMedals, type MedalRow } from "./lib/medals";
 import { useSession } from "./session";
 import LastUpdated from "./standings/LastUpdated";
 
@@ -115,12 +115,14 @@ function MedalCountInput({
 export default function MainStandings() {
   const [standings, setStandings] = useState<Standing[]>(STANDINGS);
   const [updatedAt, setUpdatedAt] = useState<number | null>(null);
+  const loadedRef = useRef(false);
   const { court } = useSession();
   const editable = Boolean(court);
 
   useEffect(
     () =>
       subscribeMedals((snapshot) => {
+        loadedRef.current = true;
         setStandings(snapshot.standings);
         setUpdatedAt(snapshot.updatedAt);
       }),
@@ -128,20 +130,20 @@ export default function MainStandings() {
   );
 
   // Stamp Last updated on first scorer visit if the medals doc predates timestamps.
+  // Gated on loadedRef so this only ever writes back real subscribed data, never
+  // the zeroed-out placeholder `STANDINGS` this component renders before the
+  // first Firestore snapshot arrives.
   useEffect(() => {
-    if (!court || updatedAt != null) return;
+    if (!court || !loadedRef.current || updatedAt != null) return;
     void saveMedalRows(rowsFromStandings(standings));
   }, [court, updatedAt, standings]);
 
   const commitField = useCallback(
     async (wilayahId: string, field: "gold" | "silver" | "bronze", next: number) => {
-      const rows = rowsFromStandings(standings).map((row) =>
-        row.wilayahId === wilayahId ? { ...row, [field]: next } : row,
-      );
-      const result = await saveMedalRows(rows);
+      const result = await saveMedalField(wilayahId, field, next);
       return result.ok ? null : result.error;
     },
-    [standings],
+    [],
   );
 
   return (

@@ -1,4 +1,4 @@
-import { doc, onSnapshot, setDoc } from "firebase/firestore";
+import { doc, onSnapshot, runTransaction, setDoc } from "firebase/firestore";
 import { WILAYAH } from "../badminton/types";
 import type { Standing } from "../data";
 import { db } from "./firebase";
@@ -65,6 +65,23 @@ export function subscribeMedals(onChange: (snapshot: MedalsSnapshot) => void) {
 export async function saveMedalRows(rows: MedalRow[]) {
   try {
     await setDoc(REF, { rows, updatedAt: Date.now() });
+    return { ok: true as const };
+  } catch (error) {
+    return { ok: false as const, error: writeError(error) };
+  }
+}
+
+export async function saveMedalField(wilayahId: string, field: "gold" | "silver" | "bronze", value: number) {
+  try {
+    await runTransaction(db, async (tx) => {
+      const snap = await tx.get(REF);
+      const existing = (snap.data()?.rows as MedalRow[] | undefined) ?? DEFAULT_MEDAL_ROWS;
+      const hasRow = existing.some((row) => row.wilayahId === wilayahId);
+      const rows = hasRow
+        ? existing.map((row) => (row.wilayahId === wilayahId ? { ...row, [field]: value } : row))
+        : [...existing, { wilayahId, gold: 0, silver: 0, bronze: 0, [field]: value }];
+      tx.set(REF, { rows, updatedAt: Date.now() });
+    });
     return { ok: true as const };
   } catch (error) {
     return { ok: false as const, error: writeError(error) };
