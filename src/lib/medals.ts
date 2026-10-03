@@ -9,6 +9,7 @@ export type MedalRow = {
   gold: number;
   silver: number;
   bronze: number;
+  rankOverride?: number;
 };
 
 export type MedalsSnapshot = {
@@ -28,7 +29,7 @@ function rankRows(rows: MedalRow[]): Standing[] {
       silver: row.silver,
       bronze: row.bronze,
       total: row.gold + row.silver + row.bronze,
-      rank: 0,
+      rankOverride: row.rankOverride,
     };
   });
   named.sort((a, b) => b.gold - a.gold || b.silver - a.silver || b.bronze - a.bronze || a.team.localeCompare(b.team));
@@ -37,7 +38,15 @@ function rankRows(rows: MedalRow[]): Standing[] {
     const prev = named[index - 1];
     const tied = prev != null && prev.gold === row.gold && prev.silver === row.silver && prev.bronze === row.bronze;
     rank = tied ? rank : index + 1;
-    return { ...row, rank };
+    return {
+      team: row.team,
+      short: row.short,
+      gold: row.gold,
+      silver: row.silver,
+      bronze: row.bronze,
+      total: row.total,
+      rank: row.rankOverride ?? rank,
+    };
   });
 }
 
@@ -77,19 +86,27 @@ export async function saveMedalRows(rows: MedalRow[]) {
   }
 }
 
-export async function saveMedalField(wilayahId: string, field: "gold" | "silver" | "bronze", value: number) {
+async function patchMedalRow(wilayahId: string, updater: (row: MedalRow) => MedalRow) {
   try {
     await runTransaction(db, async (tx) => {
       const snap = await tx.get(REF);
       const existing = (snap.data()?.rows as MedalRow[] | undefined) ?? DEFAULT_MEDAL_ROWS;
       const hasRow = existing.some((row) => row.wilayahId === wilayahId);
       const rows = hasRow
-        ? existing.map((row) => (row.wilayahId === wilayahId ? { ...row, [field]: value } : row))
-        : [...existing, { wilayahId, gold: 0, silver: 0, bronze: 0, [field]: value }];
+        ? existing.map((row) => (row.wilayahId === wilayahId ? updater(row) : row))
+        : [...existing, updater({ wilayahId, gold: 0, silver: 0, bronze: 0 })];
       tx.set(REF, { rows, updatedAt: Date.now() });
     });
     return { ok: true as const };
   } catch (error) {
     return { ok: false as const, error: writeError(error) };
   }
+}
+
+export function saveMedalField(wilayahId: string, field: "gold" | "silver" | "bronze", value: number) {
+  return patchMedalRow(wilayahId, (row) => ({ ...row, [field]: value }));
+}
+
+export function saveMedalRankOverride(wilayahId: string, value: number) {
+  return patchMedalRow(wilayahId, (row) => ({ ...row, rankOverride: value }));
 }

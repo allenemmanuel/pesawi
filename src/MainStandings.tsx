@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { WILAYAH, wilayahChipStyle } from "./badminton/types";
 import { STANDINGS, type Standing } from "./data";
-import { saveMedalField, saveMedalRows, subscribeMedals, type MedalRow } from "./lib/medals";
+import { saveMedalField, saveMedalRankOverride, saveMedalRows, subscribeMedals, type MedalRow } from "./lib/medals";
 import { useSession } from "./session";
 import LastUpdated from "./standings/LastUpdated";
 
@@ -161,6 +161,11 @@ export default function MainStandings() {
     [],
   );
 
+  const commitRank = useCallback(async (wilayahId: string, next: number) => {
+    const result = await saveMedalRankOverride(wilayahId, next);
+    return result.ok ? null : result.error;
+  }, []);
+
   return (
     <section>
       <div
@@ -184,7 +189,7 @@ export default function MainStandings() {
           <thead>
             <tr className="border-b border-[var(--line)]">
               <th className="w-px whitespace-nowrap px-3 py-3 text-center font-semibold tracking-wide sm:px-4 sm:py-4">
-                TEMPAT
+                RANK
               </th>
               <th className="w-px whitespace-nowrap px-3 py-3 text-left font-semibold tracking-wide sm:px-4 sm:py-4">
                 WILAYAH
@@ -219,9 +224,17 @@ export default function MainStandings() {
               const wilayahId = wilayah?.id;
               return (
                 <tr key={row.team} className="border-b border-[var(--line)] last:border-b-0">
-                  <td className="w-px whitespace-nowrap px-3 py-3 text-center tabular sm:px-4 sm:py-4">
-                    {ordinal(row.rank)}
-                  </td>
+                  {editable && wilayahId ? (
+                    <MedalCountInput
+                      value={row.rank}
+                      ariaLabel={`${row.team} rank`}
+                      onCommit={(n) => commitRank(wilayahId, n)}
+                    />
+                  ) : (
+                    <td className="w-px whitespace-nowrap px-3 py-3 text-center tabular sm:px-4 sm:py-4">
+                      {ordinal(row.rank)}
+                    </td>
+                  )}
                   <td
                     className="w-px whitespace-nowrap px-3 py-3 font-medium tracking-wide sm:px-4 sm:py-4"
                     style={wilayah ? wilayahChipStyle(wilayah) : undefined}
