@@ -32,7 +32,13 @@ function rankRows(rows: MedalRow[]): Standing[] {
     };
   });
   named.sort((a, b) => b.gold - a.gold || b.silver - a.silver || b.bronze - a.bronze || a.team.localeCompare(b.team));
-  return named.map((row, index) => ({ ...row, rank: index + 1 }));
+  let rank = 0;
+  return named.map((row, index) => {
+    const prev = named[index - 1];
+    const tied = prev != null && prev.gold === row.gold && prev.silver === row.silver && prev.bronze === row.bronze;
+    rank = tied ? rank : index + 1;
+    return { ...row, rank };
+  });
 }
 
 export const DEFAULT_MEDAL_ROWS: MedalRow[] = WILAYAH.map((wilayah) => ({
