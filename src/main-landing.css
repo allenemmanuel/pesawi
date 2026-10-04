@@ -73,9 +73,10 @@
 }
 
 .sport-live-title--pingat {
-  -webkit-text-stroke: 2.5px #fff;
+  -webkit-text-stroke: 4px #fff;
   text-shadow:
-    0 0 14px rgba(0, 0, 0, 0.55),
+    0 0 10px rgba(0, 0, 0, 0.7),
+    0 0 22px rgba(0, 0, 0, 0.6),
     0 2px 0 #8a5a00,
     0 4px 0 #6b4500,
     0 10px 22px rgba(0, 0, 0, 0.45);
