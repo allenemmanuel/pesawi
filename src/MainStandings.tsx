@@ -163,7 +163,7 @@ export default function MainStandings() {
           className="mb-0 h-auto w-[12.6rem] max-w-full object-contain drop-shadow-[0_18px_40px_rgba(0,0,0,0.45)] md:mb-[-10px]"
           draggable={false}
         />
-        <h1 className="sport-live-title shrink">KEDUDUKAN PINGAT</h1>
+        <h1 className="sport-live-title sport-live-title--pingat shrink">KEDUDUKAN PINGAT</h1>
         <p className="text-[0.8rem] font-bold uppercase tracking-[0.3em] text-black sm:text-[0.95rem] [-webkit-text-stroke:0.6px_rgba(255,255,255,0.9)] [paint-order:stroke_fill] [text-shadow:0_0_10px_rgba(255,255,255,0.55),0_2px_6px_rgba(255,255,255,0.35)]">
           Kedudukan keseluruhan wilayah
         </p>
