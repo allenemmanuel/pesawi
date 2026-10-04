@@ -64,6 +64,14 @@
   }
 }
 
+.sport-live-title--blue {
+  color: #3aa0f0;
+  text-shadow:
+    0 2px 0 #00428a,
+    0 4px 0 #002f66,
+    0 10px 22px rgba(0, 0, 0, 0.45);
+}
+
 .site-main--pad {
   padding-top: 4.5rem;
 }

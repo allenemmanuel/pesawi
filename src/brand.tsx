@@ -238,7 +238,7 @@ export function ProjectionBrand({ subtitle }: { subtitle: string }) {
         <p className="mt-1.5 text-xs tracking-[0.18em] text-[var(--gold)] sm:text-sm">
           PESAWI KE-13 · {EVENT.venue}
         </p>
-        <h1 className="font-display mt-0.5 text-2xl tracking-tight sm:text-3xl">{subtitle}</h1>
+        <h1 className="font-display mt-0.5 text-2xl tracking-tight text-[#3aa0f0] sm:text-3xl">{subtitle}</h1>
       </div>
     </div>
   );

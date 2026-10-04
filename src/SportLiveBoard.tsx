@@ -68,7 +68,7 @@ export default function SportLiveBoard({ sport, children }: Props) {
               className="relative top-[-10px] h-auto w-[22vw] max-w-[8.25rem] shrink object-contain drop-shadow-[0_8px_16px_rgba(0,0,0,0.45)] sm:w-[8.25rem] sm:max-w-none md:w-[10.5rem]"
               draggable={false}
             />
-            <h1 className="sport-live-title shrink">{title}</h1>
+            <h1 className="sport-live-title sport-live-title--blue shrink">{title}</h1>
             <img
               src={mascotSrc}
               alt=""
