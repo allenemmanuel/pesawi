@@ -1,6 +1,7 @@
 import { WILAYAH, wilayahChipStyle } from "../badminton/types";
 import type { RoundRobinRow } from "./types";
 import LastUpdated from "./LastUpdated";
+import RankCellInput from "./RankCellInput";
 import ScoreCellInput from "./ScoreCellInput";
 
 type Props = {
@@ -9,12 +10,21 @@ type Props = {
   lastUpdated?: number | null;
   editable?: boolean;
   onCommitScore?: (rowId: string, colId: string, a: number | null, b: number | null) => Promise<string | null>;
+  /** Supplied only where RANK is manually editable (Petanque). Pass null to clear the override. */
+  onCommitRank?: (wilayahId: string, rank: number | null) => Promise<string | null>;
 };
 
 const goldCol = "bg-[color-mix(in_srgb,var(--gold)_18%,transparent)]";
 const rankCol = "bg-[color-mix(in_srgb,var(--jumlah)_18%,transparent)]";
 
-export default function RoundRobinTable({ rows, title, lastUpdated, editable = false, onCommitScore }: Props) {
+export default function RoundRobinTable({
+  rows,
+  title,
+  lastUpdated,
+  editable = false,
+  onCommitScore,
+  onCommitRank,
+}: Props) {
   return (
     <section className="w-full min-w-0">
       {title ? (
@@ -130,9 +140,17 @@ export default function RoundRobinTable({ rows, title, lastUpdated, editable = f
                 <td className={`px-1.5 py-3 text-center tabular font-medium sm:py-4 ${goldCol}`}>{row.wins}</td>
                 <td className={`px-1.5 py-3 text-center tabular font-medium sm:py-4 ${goldCol}`}>{row.losses}</td>
                 <td className={`px-1.5 py-3 text-center tabular font-semibold sm:py-4 ${goldCol}`}>{row.points}</td>
-                <td className={`px-1.5 py-3 text-center tabular font-bold text-[var(--jumlah)] sm:py-4 ${rankCol}`}>
-                  {row.rank}
-                </td>
+                {editable && onCommitRank ? (
+                  <RankCellInput
+                    rank={row.rank}
+                    className={rankCol}
+                    onCommit={(rank) => onCommitRank(row.wilayah.id, rank)}
+                  />
+                ) : (
+                  <td className={`px-1.5 py-3 text-center tabular font-bold text-[var(--jumlah)] sm:py-4 ${rankCol}`}>
+                    {row.rank}
+                  </td>
+                )}
               </tr>
             ))}
           </tbody>
